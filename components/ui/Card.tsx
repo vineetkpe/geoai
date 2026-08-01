@@ -1,18 +1,13 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  glass?: boolean;
-}
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export const Card: React.FC<CardProps> = ({ children, className, glass = true, ...props }) => {
+export const Card: React.FC<CardProps> = ({ children, className, ...props }) => {
   return (
     <div
       className={cn(
-        'rounded-2xl p-6 transition-all duration-200 border',
-        glass
-          ? 'bg-slate-900/60 backdrop-blur-xl border-slate-800 shadow-xl shadow-slate-950/40'
-          : 'bg-slate-900 border-slate-800 shadow-lg',
+        "bg-[#1B2333] border border-[#6B7280]/40 rounded-xl p-6 sm:p-8 shadow-lg",
         className
       )}
       {...props}

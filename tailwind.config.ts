@@ -9,21 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        brand: {
-          50: '#f0f4ff',
-          100: '#e0e9ff',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          900: '#312e81',
-        },
-        slateDark: {
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        }
+        pageBg: "#0E1420",
+        primaryText: "#EDEEF2",
+        mutedText: "#6B7280",
+        cardBg: "#1B2333",
+        accent: "#F5A623",
+      },
+      fontFamily: {
+        display: ["var(--font-space-grotesk)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+        mono: ["var(--font-ibm-plex-mono)", "monospace"],
       },
     },
   },
