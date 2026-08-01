@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
               color: '#64748b',
             }}
           >
-            Evaluated across Gemini, GPT-4o, Claude 3.5, and Perplexity AI models
+            Evaluated across Gemini, GPT, Claude, and Perplexity
           </div>
         </div>
       ),

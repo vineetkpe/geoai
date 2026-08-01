@@ -13,23 +13,46 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { domain, brand_description, custom_queries } = body;
 
-    if (!domain || !brand_description) {
+    if (!domain || typeof domain !== 'string' || !brand_description || typeof brand_description !== 'string') {
       return NextResponse.json(
-        { error: 'Missing required fields: domain and brand_description are required.' },
+        { error: 'Missing or invalid required fields: domain and brand_description are required.' },
         { status: 400 }
       );
     }
 
     const cleanDomain = sanitizeDomain(domain);
 
+    // Validate domain length and non-emptiness (max valid domain length is 253 chars)
+    if (!cleanDomain || cleanDomain.length > 253) {
+      return NextResponse.json(
+        { error: 'Invalid domain length. Domain must be non-empty and 253 characters or fewer.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate brand_description length (max 200 characters)
+    if (brand_description.trim().length === 0 || brand_description.length > 200) {
+      return NextResponse.json(
+        { error: 'Invalid brand description length. Description must be between 1 and 200 characters.' },
+        { status: 400 }
+      );
+    }
+
     // 1. Rate Limit Check (30-day limit per domain)
     const rateCheck = await checkRateLimit(cleanDomain);
-    if (!rateCheck.isAllowed && rateCheck.existingScanId) {
-      return NextResponse.json({
-        scanId: rateCheck.existingScanId,
-        cachedScan: true,
-        message: 'A free scan was run for this domain in the last 30 days. Returning existing report.',
-      });
+    if (!rateCheck.isAllowed) {
+      if (rateCheck.existingScanId) {
+        return NextResponse.json({
+          scanId: rateCheck.existingScanId,
+          cachedScan: true,
+          message: 'A free scan was run for this domain in the last 30 days. Returning existing report.',
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'Rate limit check failed due to a database error. Please try again later.' },
+          { status: 503 }
+        );
+      }
     }
 
     // 2. Generate 5 realistic buyer search queries (Gemini or fallback)

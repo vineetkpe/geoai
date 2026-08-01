@@ -39,9 +39,9 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to load scan queries' }, { status: 500 });
     }
 
-    // Check unlocked cookie flag for this session
+    // Check unlocked cookie flag for this visitor's session
     const unlockCookie = req.cookies.get(`unlocked_${scanId}`);
-    const isUnlocked = scanData.is_unlocked || Boolean(unlockCookie?.value);
+    const isUnlocked = Boolean(unlockCookie?.value);
 
     // Format output
     const formattedQueries: ScanQuery[] = ((queriesRows as any[]) || []).map((q) => ({

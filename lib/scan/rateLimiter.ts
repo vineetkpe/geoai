@@ -15,8 +15,17 @@ export async function checkRateLimit(domain: string): Promise<{
       .eq('domain', cleanDomain)
       .single();
 
-    if (error || !limitRow) {
-      // No existing limit row, domain is allowed to scan
+    if (error) {
+      // Check specifically for PostgREST "no rows found" error code (PGRST116)
+      if (error.code === 'PGRST116') {
+        return { isAllowed: true };
+      }
+      // Fail closed on any other database error to prevent bypass/unlimited scans
+      console.error('[checkRateLimit] Unexpected database error checking rate limit:', error);
+      return { isAllowed: false };
+    }
+
+    if (!limitRow) {
       return { isAllowed: true };
     }
 
@@ -35,7 +44,7 @@ export async function checkRateLimit(domain: string): Promise<{
 
     return { isAllowed: true };
   } catch (err) {
-    console.warn('[checkRateLimit] Error checking rate limit:', err);
-    return { isAllowed: true };
+    console.error('[checkRateLimit] Exception during rate limit check:', err);
+    return { isAllowed: false };
   }
 }
