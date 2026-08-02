@@ -24,9 +24,10 @@ export async function generateQueries(
   let generated: string[] = [];
 
   try {
+    const websiteUrl = `https://${cleanDomain}`;
     const prompt = `You are an expert search behavior researcher. Generate ${neededCount} realistic buyer search queries that prospective customers might ask AI search engines when looking for a product like this:
-Brand/Product Domain: ${cleanDomain} (${brandName})
-Product Description: "${brandDescription}"
+Here is the business's website: ${websiteUrl}
+Use its content plus this description to generate realistic buyer queries: "${brandDescription}" (${brandName})
 
 Requirements:
 - Provide high-intent buyer queries (e.g. "best [category] software for [use case]", "top tools for [task]", "[category] alternatives").

@@ -5,7 +5,7 @@ export async function callGemini(prompt: string): Promise<string> {
   }
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: {
@@ -15,6 +15,11 @@ export async function callGemini(prompt: string): Promise<string> {
         contents: [
           {
             parts: [{ text: prompt }],
+          },
+        ],
+        tools: [
+          {
+            url_context: {},
           },
         ],
       }),
@@ -27,7 +32,16 @@ export async function callGemini(prompt: string): Promise<string> {
   }
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const candidate = data.candidates?.[0];
+  const urlContextMetadata = candidate?.url_context_metadata || candidate?.urlContextMetadata || candidate?.groundingMetadata || data.url_context_metadata || data.urlContextMetadata;
+
+  if (urlContextMetadata) {
+    console.log('[callGemini] URL context metadata retrieved successfully:', urlContextMetadata);
+  } else {
+    console.log('[callGemini] URL context metadata not present in response');
+  }
+
+  const text = candidate?.content?.parts?.[0]?.text;
   if (!text) {
     throw new Error('Empty response from Gemini API');
   }

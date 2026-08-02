@@ -15,7 +15,7 @@ export const ModelBreakdown: React.FC<ModelBreakdownProps> = ({ breakdown }) => 
       case 'gemini':
         return {
           title: 'Google Gemini',
-          subtitle: 'Gemini 2.5 Flash-Lite',
+          subtitle: 'Gemini 3.1 Flash-Lite',
           icon: Sparkles,
           color: 'text-amber-400',
           bgColor: 'bg-amber-500/10 border-amber-500/30',

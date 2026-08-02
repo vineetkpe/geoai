@@ -19,8 +19,8 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
   const getModelLabel = (name: ModelName) => {
     switch (name) {
       case 'gemini': return 'Gemini';
-      case 'gpt': return 'GPT-4o';
-      case 'claude': return 'Claude 3.5';
+      case 'gpt': return 'GPT';
+      case 'claude': return 'Claude';
       case 'perplexity': return 'Perplexity';
     }
   };
@@ -101,7 +101,11 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
           </div>
 
           <div className="max-h-60 overflow-y-auto whitespace-pre-wrap pr-2 text-slate-300">
-            {activeResult.raw_response}
+            {activeResult.status === 'unavailable'
+              ? "This model didn't respond for this query. This can happen occasionally — the other models' results below are still accurate."
+              : activeResult.status === 'skipped'
+              ? "This model wasn't checked for this scan."
+              : activeResult.raw_response}
           </div>
         </div>
       )}
