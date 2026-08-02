@@ -1,28 +1,73 @@
 'use client';
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
+import { LoadingScan } from "@/components/LoadingScan";
 
 export const ScanForm: React.FC = () => {
+  const router = useRouter();
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
   const [question1, setQuestion1] = useState("");
   const [question2, setQuestion2] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form values submitted:", {
-      domain,
-      description,
-      customQuestions: [question1, question2].filter(Boolean),
-    });
+    setError("");
+    setLoading(true);
+
+    const customQueries = [question1, question2]
+      .map((q) => q.trim())
+      .filter((q) => q.length > 0);
+
+    try {
+      const res = await fetch("/api/scan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          domain: domain.trim(),
+          brand_description: description.trim(),
+          custom_queries: customQueries,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong — please try again");
+      }
+
+      const scanId = data.scanId || data.id;
+      if (scanId) {
+        router.push(`/scan/${scanId}`);
+      } else {
+        throw new Error("Something went wrong — please try again");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong — please try again");
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return <LoadingScan domain={domain} />;
+  }
 
   return (
     <Card className="w-full max-w-xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
+            {error}
+          </div>
+        )}
         <div>
           <label className="block text-xs font-semibold text-[#EDEEF2] uppercase tracking-wider mb-2">
             Website Domain <span className="text-[#F5A623]">*</span>
@@ -74,7 +119,7 @@ export const ScanForm: React.FC = () => {
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full">
+        <Button type="submit" size="lg" className="w-full" disabled={loading}>
           Check my visibility
         </Button>
       </form>
