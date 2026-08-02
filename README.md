@@ -6,7 +6,7 @@
 
 ## 🚀 Features
 
-- **Multi-LLM Parallel Execution**: Queries Gemini 1.5 Flash, GPT-4o Mini, Claude 3.5 Haiku, and Perplexity Sonar concurrently with graceful error isolation per model.
+- **Multi-LLM Parallel Execution**: Queries Gemini 2.5 Flash-Lite, GPT-4o Mini, Claude 3.5 Haiku, and Perplexity Sonar concurrently with graceful error isolation per model.
 - **AI Query Synthesis**: Generates 5 realistic buyer search queries based on brand description and custom inputs.
 - **30-Day Domain Rate Limiting**: Prevents abuse by enforcing 1 free scan per domain every 30 days via `domain_scan_limits`.
 - **48-Hour Result Caching**: Reuses identical query results executed within 48 hours to minimize API costs.

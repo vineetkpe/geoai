@@ -76,7 +76,7 @@ export const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ domain, score, scanI
       </div>
 
       <p className="text-xs text-slate-400 max-w-lg mx-auto">
-        Based on query sampling across Gemini 1.5, GPT-4o, Claude 3.5 Haiku, and Perplexity Sonar.
+        Based on query sampling across Gemini, GPT-4o Mini, Claude Haiku, and Perplexity Sonar.
       </p>
     </Card>
   );
