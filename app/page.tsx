@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { ScanForm } from "@/components/ScanForm";
 
 export default function Home() {
@@ -65,8 +66,16 @@ export default function Home() {
       </main>
 
       {/* 5. Minimal Footer */}
-      <footer className="w-full max-w-4xl mx-auto px-4 py-8 border-t border-[#6B7280]/20 text-center text-xs text-[#6B7280]">
-        © {new Date().getFullYear()} AI Visibility Checker. All rights reserved.
+      <footer className="w-full max-w-4xl mx-auto px-4 py-8 border-t border-[#6B7280]/20 text-center text-xs text-[#6B7280] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span>© {new Date().getFullYear()} AI Visibility Checker. All rights reserved.</span>
+        <div className="flex items-center gap-4">
+          <Link href="/privacy" className="hover:text-[#EDEEF2] transition-colors">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="hover:text-[#EDEEF2] transition-colors">
+            Terms of Service
+          </Link>
+        </div>
       </footer>
     </div>
   );

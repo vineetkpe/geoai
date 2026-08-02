@@ -17,7 +17,7 @@ export const ScoreDisplay: React.FC<ScoreDisplayProps> = ({ domain, score, scanI
     if (val >= 80) return { label: 'Dominant AI Visibility', color: 'text-emerald-400', bg: 'from-emerald-500/20 to-emerald-500/5', border: 'border-emerald-500/30' };
     if (val >= 50) return { label: 'Moderate AI Visibility', color: 'text-amber-400', bg: 'from-amber-500/20 to-amber-500/5', border: 'border-amber-500/30' };
     if (val >= 20) return { label: 'Low AI Visibility', color: 'text-orange-400', bg: 'from-orange-500/20 to-orange-500/5', border: 'border-orange-500/30' };
-    return { label: 'Invisible in AI Engine Search', color: 'text-red-400', bg: 'from-red-500/20 to-red-500/5', border: 'border-red-500/30' };
+    return { label: 'Invisible in AI Engine Search', color: 'text-rose-400', bg: 'from-rose-500/20 to-rose-500/5', border: 'border-rose-500/30' };
   };
 
   const grade = getGradeInfo(score);

@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       statusColor = '#fb923c'; // orange
     } else if (score < 20) {
       statusText = 'Invisible in AI Search';
-      statusColor = '#f87171'; // red
+      statusColor = '#D9707A'; // rose
     }
 
     return new ImageResponse(

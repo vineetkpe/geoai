@@ -81,7 +81,7 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
               ) : isMentioned ? (
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               ) : (
-                <XCircle className="w-3.5 h-3.5 text-red-400" />
+                <XCircle className="w-3.5 h-3.5 text-rose-400" />
               )}
             </button>
           );
@@ -110,8 +110,8 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
                   Mentioned your business
                 </span>
               ) : (
-                <span className="text-red-400 flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-red-400 shrink-0" />
+                <span className="text-rose-400 flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
                   Did not mention your business — recommended other options instead
                 </span>
               )}
