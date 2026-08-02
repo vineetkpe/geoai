@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         });
       } else {
         return NextResponse.json(
-          { error: 'Rate limit check failed due to a database error. Please try again later.' },
+          { error: rateCheck.error || 'Rate limit check failed due to a database error. Please try again later.' },
           { status: 503 }
         );
       }

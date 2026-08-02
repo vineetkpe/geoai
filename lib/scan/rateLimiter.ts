@@ -4,8 +4,20 @@ import { sanitizeDomain } from '@/lib/utils';
 export async function checkRateLimit(domain: string): Promise<{
   isAllowed: boolean;
   existingScanId?: string;
+  error?: string;
 }> {
   const cleanDomain = sanitizeDomain(domain);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('placeholder') || supabaseKey.includes('placeholder')) {
+    console.warn('[checkRateLimit] Supabase credentials are missing or using placeholder in .env.local');
+    return {
+      isAllowed: false,
+      error: 'Supabase database is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to .env.local',
+    };
+  }
+
   const supabase = getSupabaseServerClient();
 
   try {
@@ -22,7 +34,10 @@ export async function checkRateLimit(domain: string): Promise<{
       }
       // Fail closed on any other database error to prevent bypass/unlimited scans
       console.error('[checkRateLimit] Unexpected database error checking rate limit:', error);
-      return { isAllowed: false };
+      return {
+        isAllowed: false,
+        error: `Database error (${error.code || 'ERR'}): ${error.message || 'Failed to access domain_scan_limits. Ensure migrations in supabase/migrations/0001_init.sql are applied.'}`,
+      };
     }
 
     if (!limitRow) {
@@ -45,6 +60,9 @@ export async function checkRateLimit(domain: string): Promise<{
     return { isAllowed: true };
   } catch (err) {
     console.error('[checkRateLimit] Exception during rate limit check:', err);
-    return { isAllowed: false };
+    return {
+      isAllowed: false,
+      error: `Database connection error: ${err instanceof Error ? err.message : 'Failed to connect to Supabase.'}`,
+    };
   }
 }
