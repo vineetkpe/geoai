@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { ScanQuery, ScanResult, ModelName } from '@/types';
-import { CheckCircle2, XCircle, AlertCircle, Quote, Bot, Sparkles, Brain, Compass } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, MinusCircle, Quote, Bot, Sparkles, Brain, Compass } from 'lucide-react';
 
 interface QueryResultCardProps {
   query: ScanQuery;
@@ -42,6 +42,7 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
           const isSelected = res.model_name === selectedModel;
           const isMentioned = res.mentioned;
           const isUnavailable = res.status === 'unavailable';
+          const isSkipped = res.status === 'skipped';
 
           return (
             <button
@@ -54,7 +55,9 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
               }`}
             >
               <span>{getModelLabel(res.model_name)}</span>
-              {isUnavailable ? (
+              {isSkipped ? (
+                <MinusCircle className="w-3 h-3 text-slate-400" />
+              ) : isUnavailable ? (
                 <AlertCircle className="w-3 h-3 text-amber-400" />
               ) : isMentioned ? (
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -75,8 +78,24 @@ export const QueryResultCard: React.FC<QueryResultCardProps> = ({ query, isLocke
             </span>
             <span className="flex items-center gap-1">
               Status:{' '}
-              <strong className={activeResult.mentioned ? 'text-emerald-400' : 'text-red-400'}>
-                {activeResult.mentioned ? 'Mentioned' : 'Not Mentioned'}
+              <strong
+                className={
+                  activeResult.status === 'skipped'
+                    ? 'text-slate-400'
+                    : activeResult.status === 'unavailable'
+                    ? 'text-amber-400'
+                    : activeResult.mentioned
+                    ? 'text-emerald-400'
+                    : 'text-red-400'
+                }
+              >
+                {activeResult.status === 'skipped'
+                  ? 'Skipped'
+                  : activeResult.status === 'unavailable'
+                  ? 'Unavailable'
+                  : activeResult.mentioned
+                  ? 'Mentioned'
+                  : 'Not Mentioned'}
               </strong>
             </span>
           </div>

@@ -79,14 +79,29 @@ export default function ScanResultPage() {
     let total = 0;
     let mentioned = 0;
     let hasUnavailable = false;
+    let hasSkipped = false;
+    let hasSuccess = false;
 
     for (const q of queries) {
       const res = (q.results || []).find((r) => r.model_name === name);
       if (res) {
         total++;
-        if (res.mentioned) mentioned++;
-        if (res.status === 'unavailable') hasUnavailable = true;
+        if (res.status === 'success') {
+          hasSuccess = true;
+          if (res.mentioned) mentioned++;
+        } else if (res.status === 'skipped') {
+          hasSkipped = true;
+        } else if (res.status === 'unavailable') {
+          hasUnavailable = true;
+        }
       }
+    }
+
+    let status: ModelBreakdownItem['status'] = 'success';
+    if (hasSkipped && !hasSuccess && !hasUnavailable) {
+      status = 'skipped';
+    } else if (hasUnavailable) {
+      status = 'unavailable';
     }
 
     return {
@@ -94,7 +109,7 @@ export default function ScanResultPage() {
       displayName: name.toUpperCase(),
       totalQueries: total,
       mentionedQueries: mentioned,
-      status: hasUnavailable ? 'unavailable' : 'success',
+      status,
     };
   });
 

@@ -109,6 +109,7 @@ Fill in the required API keys:
 | `ANTHROPIC_API_KEY` | Anthropic API Key | [Anthropic Console](https://console.anthropic.com/) |
 | `PERPLEXITY_API_KEY` | Perplexity API Key | [Perplexity Settings](https://www.perplexity.ai/settings/api) |
 | `RESEND_API_KEY` | Resend API Key | Optional for lead email notifications |
+| `ENABLED_MODELS` | Optional comma-separated model filter (`gemini,gpt,claude,perplexity`). Defaults to all 4 if unset. | Internal testing / config |
 
 ---
 

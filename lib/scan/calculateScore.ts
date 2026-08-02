@@ -8,9 +8,11 @@ export function calculateScore(queryResults: ModelResult[][]): number {
 
   for (const modelGroup of queryResults) {
     for (const res of modelGroup) {
-      totalCombos++;
-      if (res.mentioned) {
-        mentionCount++;
+      if (res.status === 'success') {
+        totalCombos++;
+        if (res.mentioned) {
+          mentionCount++;
+        }
       }
     }
   }

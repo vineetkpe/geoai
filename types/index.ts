@@ -27,7 +27,7 @@ export interface ScanResult {
   raw_response: string;
   mentioned: boolean;
   competitors_mentioned: string[];
-  status: 'success' | 'unavailable';
+  status: 'success' | 'unavailable' | 'skipped';
   created_at: string;
 }
 
@@ -36,7 +36,7 @@ export interface ModelResult {
   raw_response: string;
   mentioned: boolean;
   competitors_mentioned: string[];
-  status: 'success' | 'unavailable';
+  status: 'success' | 'unavailable' | 'skipped';
 }
 
 export interface QueryModelExecution {
@@ -60,5 +60,5 @@ export interface ModelBreakdownItem {
   displayName: string;
   totalQueries: number;
   mentionedQueries: number;
-  status: 'success' | 'unavailable' | 'mixed';
+  status: 'success' | 'unavailable' | 'skipped' | 'mixed';
 }

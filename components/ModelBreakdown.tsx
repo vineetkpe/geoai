@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { ModelBreakdownItem, ModelName } from '@/types';
-import { CheckCircle2, XCircle, AlertCircle, Sparkles, Bot, Compass, Brain } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, MinusCircle, Sparkles, Bot, Compass, Brain } from 'lucide-react';
 
 interface ModelBreakdownProps {
   breakdown: ModelBreakdownItem[];
@@ -60,17 +60,25 @@ export const ModelBreakdown: React.FC<ModelBreakdownProps> = ({ breakdown }) => 
           const Icon = meta.icon;
           const isMentioned = item.mentionedQueries > 0;
           const isUnavailable = item.status === 'unavailable';
+          const isSkipped = item.status === 'skipped';
 
           return (
-            <Card key={item.model_name} className="relative p-5 hover:border-slate-700 transition-all">
+            <Card
+              key={item.model_name}
+              className={`relative p-5 transition-all ${
+                isSkipped
+                  ? 'opacity-50 bg-slate-950/40 border-slate-800/60'
+                  : 'hover:border-slate-700'
+              }`}
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className={`p-2.5 rounded-xl border ${meta.bgColor}`}>
-                    <Icon className={`w-5 h-5 ${meta.color}`} />
+                  <div className={`p-2.5 rounded-xl border ${isSkipped ? 'bg-slate-800/40 border-slate-700/50' : meta.bgColor}`}>
+                    <Icon className={`w-5 h-5 ${isSkipped ? 'text-slate-500' : meta.color}`} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white">{meta.title}</h4>
-                    <p className="text-xs text-slate-400">{meta.subtitle}</p>
+                    <h4 className={`text-sm font-bold ${isSkipped ? 'text-slate-400' : 'text-white'}`}>{meta.title}</h4>
+                    <p className="text-xs text-slate-500">{meta.subtitle}</p>
                   </div>
                 </div>
               </div>
@@ -79,7 +87,12 @@ export const ModelBreakdown: React.FC<ModelBreakdownProps> = ({ breakdown }) => 
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   Status
                 </span>
-                {isUnavailable ? (
+                {isSkipped ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-400 px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">
+                    <MinusCircle className="w-3.5 h-3.5 text-slate-400" />
+                    Skipped
+                  </span>
+                ) : isUnavailable ? (
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
                     <AlertCircle className="w-3.5 h-3.5" />
                     Unavailable
