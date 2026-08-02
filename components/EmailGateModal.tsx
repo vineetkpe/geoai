@@ -75,7 +75,7 @@ export const EmailGateModal: React.FC<EmailGateModalProps> = ({
           Unlock Full AI Visibility Report
         </h3>
         <p className="text-sm text-center text-slate-400 mb-6">
-          See all 5 buyer search queries across all 4 AI models (Gemini, GPT-4o, Claude 3.5, Perplexity) with complete raw response analysis.
+          See all 5 buyer search queries across all 4 AI models (Gemini, GPT-4o, Claude Haiku, Perplexity) with complete raw response analysis.
         </p>
 
         <div className="bg-slate-950/60 rounded-2xl p-4 border border-slate-800 mb-6 space-y-2 text-xs text-slate-300">
