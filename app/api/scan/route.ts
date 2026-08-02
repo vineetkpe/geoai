@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkIpRateLimit } from '@/lib/scan/ipRateLimiter';
 import { checkRateLimit } from '@/lib/scan/rateLimiter';
 import { generateQueries } from '@/lib/scan/generateQueries';
 import { getCachedQueryResults } from '@/lib/scan/cache';
@@ -35,6 +36,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid brand description length. Description must be between 1 and 200 characters.' },
         { status: 400 }
+      );
+    }
+
+    // 0. IP Rate Limit Check (max 3 scans per 60 min per IP)
+    const ipRateCheck = await checkIpRateLimit(req);
+    if (!ipRateCheck.isAllowed) {
+      return NextResponse.json(
+        { error: ipRateCheck.error || 'Too many scans from this network. Please try again in a bit.' },
+        { status: 429 }
       );
     }
 

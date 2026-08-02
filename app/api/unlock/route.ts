@@ -6,7 +6,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { scanId, email } = body;
 
-    if (!scanId || !email || !email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!scanId || !email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
       return NextResponse.json(
         { error: 'Valid scanId and email address are required.' },
         { status: 400 }
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     response.cookies.set(`unlocked_${scanId}`, 'true', {
       path: '/',
-      httpOnly: false,
+      httpOnly: true,
       maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: 'lax',
     });
