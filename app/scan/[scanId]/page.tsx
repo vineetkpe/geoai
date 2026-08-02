@@ -122,7 +122,7 @@ export default function ScanResultPage() {
       }
     }
   }
-  const competitorCount = Math.max(3, competitorSet.size);
+  const competitorCount = competitorSet.size;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
@@ -178,7 +178,9 @@ export default function ScanResultPage() {
             </div>
 
             <h3 className="text-2xl font-black text-white">
-              {competitorCount} competitors are being recommended instead of you in these results
+              {competitorCount === 0
+                ? 'See exactly how you compare to other results in these queries'
+                : `${competitorCount} ${competitorCount === 1 ? 'competitor is' : 'competitors are'} being recommended instead of you in these results`}
             </h3>
 
             <p className="text-sm text-slate-300">
