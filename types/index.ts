@@ -2,6 +2,8 @@ export type ModelName = 'gemini' | 'gpt' | 'claude' | 'perplexity';
 
 export interface Scan {
   id: string;
+  user_id?: string | null;
+  isPremiumViewer?: boolean;
   domain: string;
   brand_description: string;
   custom_queries: string[];

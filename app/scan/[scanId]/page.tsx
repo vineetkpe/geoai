@@ -6,6 +6,7 @@ import { ScoreDisplay } from '@/components/ScoreDisplay';
 import { ModelBreakdown } from '@/components/ModelBreakdown';
 import { QueryResultCard } from '@/components/QueryResultCard';
 import { EmailGateModal } from '@/components/EmailGateModal';
+import { PremiumInsights } from '@/components/PremiumInsights';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Scan, ModelBreakdownItem, ModelName } from '@/types';
@@ -215,31 +216,33 @@ export default function ScanResultPage() {
             ))}
           </div>
 
-          {/* Phase 2 Upgrade CTA (Placeholder) */}
-          <Card className="border-brand-500/40 bg-gradient-to-r from-brand-950/40 via-slate-900 to-slate-950 p-6 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/30 text-brand-300 text-xs font-bold">
-              <Zap className="w-3.5 h-3.5 text-brand-400" />
-              <span>PRO MONITORING & COMPETITOR AUDIT</span>
-            </div>
+          {/* Premium Insights for Premium Users OR Live CTA for Free/Guest Users */}
+          {scan.isPremiumViewer ? (
+            <PremiumInsights queries={queries} domain={scan.domain} />
+          ) : (
+            <Card className="border-brand-500/40 bg-gradient-to-r from-brand-950/40 via-slate-900 to-slate-950 p-6 text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/30 text-brand-300 text-xs font-bold">
+                <Zap className="w-3.5 h-3.5 text-brand-400" />
+                <span>PRO MONITORING & COMPETITOR AUDIT</span>
+              </div>
 
-            <h4 className="text-xl font-bold text-white">
-              Want exact named competitor rankings & weekly automated AI visibility alerts?
-            </h4>
+              <h4 className="text-xl font-bold text-white">
+                Want exact named competitor rankings & weekly automated AI visibility alerts?
+              </h4>
 
-            <p className="text-xs text-slate-400 max-w-lg mx-auto">
-              Get named competitor frequency breakdowns, step-by-step GEO action plans, and weekly rank tracking across ChatGPT, Gemini, Claude & Perplexity.
-            </p>
+              <p className="text-xs text-slate-400 max-w-lg mx-auto">
+                Get named competitor frequency breakdowns, step-by-step GEO action plans, and weekly rank tracking across ChatGPT, Gemini, Claude & Perplexity.
+              </p>
 
-            <div className="pt-2">
-              <Button
-                variant="secondary"
-                disabled
-                className="opacity-75 cursor-not-allowed border-brand-500/30"
-              >
-                Upgrade to Pro for $12/mo (Coming Soon in Phase 2)
-              </Button>
-            </div>
-          </Card>
+              <div className="pt-2">
+                <Link href="/upgrade">
+                  <Button variant="primary" className="shadow-lg">
+                    Request Premium Access
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          )}
         </div>
       )}
 

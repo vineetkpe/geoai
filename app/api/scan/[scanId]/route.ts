@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { createAuthServerClient } from '@/lib/supabase/authServer';
 import { Scan, ScanQuery } from '@/types';
 
 export async function GET(
@@ -43,6 +44,29 @@ export async function GET(
     const unlockCookie = req.cookies.get(`unlocked_${scanId}`);
     const isUnlocked = Boolean(unlockCookie?.value);
 
+    // Compute isPremiumViewer server-side
+    let isPremiumViewer = false;
+    try {
+      const authClient = createAuthServerClient();
+      const {
+        data: { user },
+      } = await authClient.auth.getUser();
+
+      if (user && scanData.user_id && scanData.user_id === user.id) {
+        const { data: userProfile } = await supabase
+          .from('users')
+          .select('plan')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (userProfile?.plan === 'premium') {
+          isPremiumViewer = true;
+        }
+      }
+    } catch {
+      // Unauthenticated or error checking user session - default to false
+    }
+
     // Format output
     const formattedQueries: ScanQuery[] = ((queriesRows as any[]) || []).map((q) => ({
       id: q.id,
@@ -63,6 +87,8 @@ export async function GET(
 
     const responseScan: Scan = {
       id: scanData.id,
+      user_id: scanData.user_id || null,
+      isPremiumViewer,
       domain: scanData.domain,
       brand_description: scanData.brand_description,
       custom_queries: Array.isArray(scanData.custom_queries) ? scanData.custom_queries : [],

@@ -6,6 +6,7 @@ import { getCachedQueryResults } from '@/lib/scan/cache';
 import { runAllModels } from '@/lib/llm';
 import { calculateScore } from '@/lib/scan/calculateScore';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { createAuthServerClient } from '@/lib/supabase/authServer';
 import { sanitizeDomain } from '@/lib/utils';
 import { ModelResult } from '@/types';
 
@@ -95,6 +96,20 @@ export async function POST(req: NextRequest) {
     // 5. Persist into Supabase database
     const supabase = getSupabaseServerClient();
 
+    // Check optional authenticated user session
+    let userId: string | null = null;
+    try {
+      const authClient = createAuthServerClient();
+      const {
+        data: { user },
+      } = await authClient.auth.getUser();
+      if (user) {
+        userId = user.id;
+      }
+    } catch {
+      // Guest scan - leave userId as null
+    }
+
     // Insert Scan row
     const { data: scanRow, error: scanErr } = await supabase
       .from('scans')
@@ -104,6 +119,7 @@ export async function POST(req: NextRequest) {
         custom_queries: custom_queries || [],
         visibility_score: visibilityScore,
         is_unlocked: false,
+        user_id: userId,
       } as any)
       .select('id')
       .single();
