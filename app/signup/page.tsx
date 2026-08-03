@@ -59,7 +59,6 @@ export default function SignUpPage() {
   };
 
   // TODO: re-enable when Google OAuth provider is configured in Supabase
-  /*
   const handleGoogleSignUp = async () => {
     setError(null);
     setGoogleLoading(true);
@@ -81,7 +80,6 @@ export default function SignUpPage() {
       setGoogleLoading(false);
     }
   };
-  */
 
   return (
     <main className="min-h-screen bg-[#0E1420] text-[#EDEEF2] flex items-center justify-center p-4">
