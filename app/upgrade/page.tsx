@@ -11,8 +11,9 @@ import { CheckCircle2, Clock, Sparkles, ShieldCheck } from "lucide-react";
 export default async function UpgradePage() {
   const authClient = createAuthServerClient();
   const {
-    data: { user },
-  } = await authClient.auth.getUser();
+    data: { session },
+  } = await authClient.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) {
     redirect("/login");
@@ -20,23 +21,24 @@ export default async function UpgradePage() {
 
   const serviceClient = getSupabaseServerClient();
 
-  // Fetch current user plan
-  const { data: userProfile } = await serviceClient
-    .from("users")
-    .select("plan")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Fetch plan and latest upgrade request concurrently
+  const [profileResult, requestResult] = await Promise.all([
+    serviceClient
+      .from("users")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle(),
+    serviceClient
+      .from("upgrade_requests")
+      .select("status, requested_at")
+      .eq("user_id", user.id)
+      .order("requested_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
-  const userPlan = userProfile?.plan || "free";
-
-  // Fetch latest upgrade request
-  const { data: latestRequest } = await serviceClient
-    .from("upgrade_requests")
-    .select("status, requested_at")
-    .eq("user_id", user.id)
-    .order("requested_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const userPlan = profileResult.data?.plan || "free";
+  const latestRequest = requestResult.data;
 
   const isPending = latestRequest?.status === "pending";
   const isPremium = userPlan === "premium";

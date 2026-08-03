@@ -7,14 +7,13 @@ import { Card } from "@/components/ui/Card";
 import { AdminRequestActions } from "@/components/AdminRequestActions";
 import { Shield, Users, Search, AlertCircle } from "lucide-react";
 
-export const revalidate = 0; // Disable static cache for admin dashboard
-
 export default async function AdminDashboardPage() {
   // 1. Check session
   const authClient = createAuthServerClient();
   const {
-    data: { user },
-  } = await authClient.auth.getUser();
+    data: { session },
+  } = await authClient.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) {
     redirect("/login");
@@ -22,23 +21,21 @@ export default async function AdminDashboardPage() {
 
   const serviceClient = getSupabaseServerClient();
 
-  // 2. Check is_admin flag
-  const { data: userProfile } = await serviceClient
-    .from("users")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
+  // 2. Fetch admin check, pending requests, users, and recent scans concurrently
+  const [profileRes, pendingRequestsRes, usersListRes, recentScansRes] = await Promise.all([
+    serviceClient.from("users").select("is_admin").eq("id", user.id).maybeSingle(),
+    serviceClient.from("upgrade_requests").select("id, user_id, requested_at").eq("status", "pending").order("requested_at", { ascending: false }),
+    serviceClient.from("users").select("id, email, plan, is_admin, created_at").order("created_at", { ascending: false }).limit(100),
+    serviceClient.from("scans").select("id, domain, visibility_score, created_at").order("created_at", { ascending: false }).limit(50),
+  ]);
 
-  if (!userProfile?.is_admin) {
+  if (!profileRes.data?.is_admin) {
     redirect("/");
   }
 
-  // 3a. Fetch pending upgrade requests
-  const { data: pendingRequests } = await serviceClient
-    .from("upgrade_requests")
-    .select("id, user_id, requested_at")
-    .eq("status", "pending")
-    .order("requested_at", { ascending: false });
+  const pendingRequests = pendingRequestsRes.data;
+  const usersList = usersListRes.data;
+  const recentScans = recentScansRes.data;
 
   let joinedPendingRequests: Array<{
     id: string;
@@ -62,20 +59,6 @@ export default async function AdminDashboardPage() {
       email: userEmailMap.get(r.user_id) || "Unknown User",
     }));
   }
-
-  // 3b. Fetch most recent 100 users
-  const { data: usersList } = await serviceClient
-    .from("users")
-    .select("id, email, plan, is_admin, created_at")
-    .order("created_at", { ascending: false })
-    .limit(100);
-
-  // 3c. Fetch most recent 50 scans
-  const { data: recentScans } = await serviceClient
-    .from("scans")
-    .select("id, domain, visibility_score, created_at")
-    .order("created_at", { ascending: false })
-    .limit(50);
 
   return (
     <main className="min-h-screen bg-[#0E1420] text-[#EDEEF2] p-4 sm:p-8">

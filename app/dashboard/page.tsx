@@ -9,13 +9,12 @@ import { Button } from "@/components/ui/Button";
 import { ScanForm } from "@/components/ScanForm";
 import { Sparkles, History, Search, ArrowRight, ExternalLink } from "lucide-react";
 
-export const revalidate = 0;
-
 export default async function DashboardPage() {
   const authClient = createAuthServerClient();
   const {
-    data: { user },
-  } = await authClient.auth.getUser();
+    data: { session },
+  } = await authClient.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) {
     redirect("/login");
@@ -23,25 +22,24 @@ export default async function DashboardPage() {
 
   const serviceClient = getSupabaseServerClient();
 
-  // Fetch current user plan
-  const { data: userProfile } = await serviceClient
-    .from("users")
-    .select("plan")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Fetch user plan and scans concurrently
+  const [profileResult, scansResult] = await Promise.all([
+    serviceClient
+      .from("users")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle(),
+    serviceClient
+      .from("scans")
+      .select("id, domain, visibility_score, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50),
+  ]);
 
-  const userPlan = userProfile?.plan || "free";
+  const userPlan = profileResult.data?.plan || "free";
   const isPremium = userPlan === "premium";
-
-  // Fetch user's own scans
-  const { data: userScans } = await serviceClient
-    .from("scans")
-    .select("id, domain, visibility_score, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  const scans = userScans || [];
+  const scans = scansResult.data || [];
 
   return (
     <div className="min-h-screen bg-[#0E1420] text-[#EDEEF2] flex flex-col justify-between">
