@@ -111,18 +111,35 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert Scan row
-    const { data: scanRow, error: scanErr } = await supabase
+    const insertPayload: Record<string, any> = {
+      domain: cleanDomain,
+      brand_description: brand_description.trim(),
+      custom_queries: custom_queries || [],
+      visibility_score: visibilityScore,
+      is_unlocked: false,
+    };
+
+    if (userId) {
+      insertPayload.user_id = userId;
+    }
+
+    let { data: scanRow, error: scanErr } = await supabase
       .from('scans')
-      .insert({
-        domain: cleanDomain,
-        brand_description: brand_description.trim(),
-        custom_queries: custom_queries || [],
-        visibility_score: visibilityScore,
-        is_unlocked: false,
-        user_id: userId,
-      } as any)
+      .insert(insertPayload as any)
       .select('id')
       .single();
+
+    // Fallback: If DB schema has not executed 0005_scans_user_id migration yet, retry without user_id
+    if (scanErr && (scanErr.message?.includes('user_id') || scanErr.code === 'PGRST204')) {
+      delete insertPayload.user_id;
+      const retryRes = await supabase
+        .from('scans')
+        .insert(insertPayload as any)
+        .select('id')
+        .single();
+      scanRow = retryRes.data;
+      scanErr = retryRes.error;
+    }
 
     if (scanErr || !scanRow) {
       console.error('[POST /api/scan] Error inserting scan record:', scanErr);

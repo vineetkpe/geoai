@@ -140,7 +140,12 @@ export default function ScanResultPage() {
       </div>
 
       {/* Hero Score Display */}
-      <ScoreDisplay domain={scan.domain} score={scan.visibility_score} scanId={scan.id} />
+      <ScoreDisplay
+        domain={scan.domain}
+        score={scan.visibility_score}
+        scanId={scan.id}
+        queries={queries}
+      />
 
       {/* Per-Model Breakdown Grid */}
       <ModelBreakdown breakdown={breakdown} />
