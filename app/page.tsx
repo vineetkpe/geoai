@@ -1,16 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { ScanForm } from "@/components/ScanForm";
+import { Header } from "@/components/Header";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0E1420] text-[#EDEEF2] flex flex-col justify-between">
-      {/* 1. Simple Header */}
-      <header className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-8 text-center sm:text-left">
-        <span className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#EDEEF2]">
-          AI Visibility Checker
-        </span>
-      </header>
+      <Header />
 
       {/* Main Centered Column */}
       <main className="w-full max-w-2xl mx-auto px-4 py-8 sm:py-12 space-y-12 sm:space-y-16 flex-1">

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
+import { Header } from '@/components/Header';
 
 export const metadata = {
   title: 'Terms of Service - AI Visibility Checker',
@@ -10,11 +11,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-pageBg text-primaryText flex flex-col justify-between">
-      <header className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-8">
-        <Link href="/" className="font-display text-xl sm:text-2xl font-bold tracking-tight text-primaryText hover:opacity-90">
-          AI Visibility Checker
-        </Link>
-      </header>
+      <Header />
 
       <main className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-12 flex-1">
         <Card className="space-y-6">
