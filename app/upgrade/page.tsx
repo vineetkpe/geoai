@@ -9,11 +9,10 @@ import { RequestUpgradeButton } from "@/components/RequestUpgradeButton";
 import { CheckCircle2, Clock, Sparkles, ShieldCheck } from "lucide-react";
 
 export default async function UpgradePage() {
-  const authClient = await createAuthServerClient();
+  const authClient = createAuthServerClient();
   const {
-    data: { session },
-  } = await authClient.auth.getSession();
-  const user = session?.user ?? null;
+    data: { user },
+  } = await authClient.auth.getUser();
 
   if (!user) {
     redirect("/login");

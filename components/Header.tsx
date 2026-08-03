@@ -21,11 +21,10 @@ export async function Header() {
   let isAdmin = false;
 
   try {
-    const authClient = await createAuthServerClient();
+    const authClient = createAuthServerClient();
     const {
-      data: { session },
-    } = await authClient.auth.getSession();
-    const currentUser = session?.user ?? null;
+      data: { user: currentUser },
+    } = await authClient.auth.getUser();
 
     if (currentUser) {
       user = currentUser;

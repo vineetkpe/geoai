@@ -19,6 +19,16 @@ export async function checkIpRateLimit(req: NextRequest): Promise<{
   const rawIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip');
   const clientIp = rawIp ? rawIp.split(',')[0].trim() : '127.0.0.1';
 
+  // Bypass IP rate limit for local development and localhost testing
+  if (
+    process.env.NODE_ENV === 'development' ||
+    clientIp === '127.0.0.1' ||
+    clientIp === '::1' ||
+    clientIp === 'localhost'
+  ) {
+    return { isAllowed: true };
+  }
+
   const supabase = getSupabaseServerClient();
 
   try {

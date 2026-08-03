@@ -84,26 +84,23 @@ export async function POST(req: NextRequest) {
     // 2. Generate 5 realistic buyer search queries (Gemini or fallback)
     const queries = await generateQueries(cleanDomain, brand_description, custom_queries || []);
 
-    // 3. For each query, query models (checking 48hr cache first)
-    const allQueryExecutions: { query_text: string; results: ModelResult[] }[] = [];
-    const rawMatrixResults: ModelResult[][] = [];
+    // 3. For each query, query models concurrently in parallel (checking 48hr cache first)
+    const allQueryExecutions = await Promise.all(
+      queries.map(async (queryText) => {
+        let modelResults = await getCachedQueryResults(queryText, cleanDomain, brand_description);
 
-    for (const queryText of queries) {
-      // Check 48-hour cache across all users
-      let modelResults = await getCachedQueryResults(queryText, cleanDomain, brand_description);
+        if (!modelResults) {
+          modelResults = await runAllModels(queryText, cleanDomain, brand_description);
+        }
 
-      if (!modelResults) {
-        // Run fresh model calls across 4 LLMs
-        modelResults = await runAllModels(queryText, cleanDomain, brand_description);
-      }
+        return {
+          query_text: queryText,
+          results: modelResults,
+        };
+      })
+    );
 
-      allQueryExecutions.push({
-        query_text: queryText,
-        results: modelResults,
-      });
-
-      rawMatrixResults.push(modelResults);
-    }
+    const rawMatrixResults = allQueryExecutions.map((e) => e.results);
 
     // 4. Calculate overall Visibility Score
     const visibilityScore = calculateScore(rawMatrixResults);

@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     "Check if ChatGPT, Claude, Gemini, and Perplexity recommend your business when prospective customers ask for recommendations.",
 };
 
+import { TopProgressBar } from "@/components/TopProgressBar";
+
 export default function RootLayout({
   children,
 }: {
@@ -39,6 +41,9 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${ibmPlexMono.variable}`}
     >
       <body className="bg-[#0E1420] text-[#EDEEF2] font-sans antialiased min-h-screen flex flex-col justify-between">
+        <React.Suspense fallback={null}>
+          <TopProgressBar />
+        </React.Suspense>
         {children}
       </body>
     </html>

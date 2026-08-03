@@ -5,10 +5,11 @@ import { Scan, ScanQuery } from '@/types';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { scanId: string } }
+  { params }: { params: Promise<{ scanId: string }> | { scanId: string } }
 ) {
   try {
-    const scanId = params.scanId;
+    const resolvedParams = await Promise.resolve(params);
+    const scanId = resolvedParams?.scanId;
     if (!scanId) {
       return NextResponse.json({ error: 'Missing scanId' }, { status: 400 });
     }

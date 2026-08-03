@@ -1,34 +1,66 @@
 import { extractBrandFromDomain, sanitizeDomain } from '@/lib/utils';
 
 export function extractCompetitors(rawResponse: string, ownDomain: string): string[] {
-  if (!rawResponse) return [];
+  if (!rawResponse || typeof rawResponse !== 'string') return [];
 
   const ownBrand = extractBrandFromDomain(sanitizeDomain(ownDomain)).toLowerCase();
-  const competitors = new Set<string>();
+  const competitorScores = new Map<string, number>();
 
-  // RegEx heuristic for capitalized multi-word or standalone Brand names (e.g. "Salesforce", "HubSpot", "Zapier", "Notion")
-  const brandPattern = /\b([A-Z][a-zA-Z0-9]+(?:\s+[A-Z][a-zA-Z0-9]+)?)\b/g;
-  const matches = rawResponse.match(brandPattern) || [];
-
-  const commonStopWords = new Set([
-    'The', 'This', 'That', 'These', 'Those', 'Here', 'There', 'What', 'Which', 'Who',
-    'Best', 'Top', 'Great', 'Popular', 'Good', 'Key', 'Main', 'Alternative', 'Alternatives',
-    'Features', 'Pricing', 'Pros', 'Cons', 'Verdict', 'Overview', 'Summary', 'Rating',
-    'Software', 'Platform', 'Tool', 'Solution', 'System', 'Service', 'App', 'Application',
-    'Free', 'Paid', 'Enterprise', 'Standard', 'Pro', 'Basic', 'Premium', 'AI', 'LLM',
-    'Google', 'OpenAI', 'Anthropic', 'Perplexity', 'ChatGPT', 'Claude', 'Gemini'
+  const stopWords = new Set([
+    'the', 'this', 'that', 'these', 'those', 'here', 'there', 'what', 'which', 'who',
+    'best', 'top', 'great', 'popular', 'good', 'key', 'main', 'alternative', 'alternatives',
+    'features', 'pricing', 'pros', 'cons', 'verdict', 'overview', 'summary', 'rating',
+    'software', 'platform', 'tool', 'tools', 'solution', 'solutions', 'system', 'service',
+    'app', 'application', 'free', 'paid', 'enterprise', 'standard', 'pro', 'basic', 'premium',
+    'ai', 'llm', 'google', 'openai', 'anthropic', 'perplexity', 'chatgpt', 'claude', 'gemini',
+    'conclusion', 'recommendation', 'recommendations', 'summary', 'introduction', 'note',
+    'comparison', 'options', 'choices', 'overview', 'final thoughts', 'key takeaway', 'user interface',
+    'key features', 'pros & cons', 'use case', 'use cases', 'target audience', 'core features'
   ]);
 
-  for (const match of matches) {
-    const cleanMatch = match.trim();
-    if (cleanMatch.length < 3) continue;
-    if (commonStopWords.has(cleanMatch)) continue;
-    if (cleanMatch.toLowerCase().includes(ownBrand)) continue;
-    if (ownBrand.includes(cleanMatch.toLowerCase())) continue;
+  // Strategy 1: Extract bolded terms at start of list items or headings (e.g., "**Asana**:", "1. **ClickUp** -", "### Notion")
+  const listHeadingPattern = /(?:^|\n)(?:\d+[\.\)]\s*|[\*\-\+]\s*)?(?:\#\#\#?\s*)?\*\*([^\*\:\-\n]+)\*\*/g;
+  let match: RegExpExecArray | null;
 
-    competitors.add(cleanMatch);
-    if (competitors.size >= 8) break;
+  while ((match = listHeadingPattern.exec(rawResponse)) !== null) {
+    const rawBrand = match[1].trim();
+    // Clean up trailing descriptors like " (Free)", ":" etc.
+    const cleanBrand = rawBrand.replace(/[\:\-\(\)].*$/, '').trim();
+    const lower = cleanBrand.toLowerCase();
+
+    if (
+      cleanBrand.length >= 2 &&
+      cleanBrand.length <= 35 &&
+      !stopWords.has(lower) &&
+      !lower.includes(ownBrand) &&
+      !ownBrand.includes(lower)
+    ) {
+      competitorScores.set(cleanBrand, (competitorScores.get(cleanBrand) || 0) + 3);
+    }
   }
 
-  return Array.from(competitors);
+  // Strategy 2: Extract bolded terms anywhere in response
+  const inlineBoldPattern = /\*\*([A-Za-z0-9\s\.\-]{2,30})\*\*/g;
+  while ((match = inlineBoldPattern.exec(rawResponse)) !== null) {
+    const rawBrand = match[1].trim();
+    const cleanBrand = rawBrand.replace(/[\:\-\(\)].*$/, '').trim();
+    const lower = cleanBrand.toLowerCase();
+
+    if (
+      cleanBrand.length >= 2 &&
+      cleanBrand.length <= 35 &&
+      !stopWords.has(lower) &&
+      !lower.includes(ownBrand) &&
+      !ownBrand.includes(lower)
+    ) {
+      competitorScores.set(cleanBrand, (competitorScores.get(cleanBrand) || 0) + 1);
+    }
+  }
+
+  // Sort competitors by mention frequency and return top competitors
+  const sorted = Array.from(competitorScores.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([name]) => name);
+
+  return sorted.slice(0, 6);
 }
