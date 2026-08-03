@@ -9,10 +9,10 @@ interface PremiumInsightsProps {
 }
 
 const MODEL_DISPLAY_NAMES: Record<ModelName, string> = {
-  gpt: "ChatGPT (GPT-4o)",
-  claude: "Claude 3.5 Sonnet",
-  gemini: "Gemini 1.5 Pro",
-  perplexity: "Perplexity Pro",
+  gpt: "ChatGPT (GPT-4o mini)",
+  claude: "Claude Haiku",
+  gemini: "Gemini Flash",
+  perplexity: "Perplexity (Sonar)",
 };
 
 export const PremiumInsights: React.FC<PremiumInsightsProps> = ({
