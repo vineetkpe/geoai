@@ -12,8 +12,9 @@ export async function Header() {
   try {
     const authClient = createAuthServerClient();
     const {
-      data: { user: currentUser },
-    } = await authClient.auth.getUser();
+      data: { session },
+    } = await authClient.auth.getSession();
+    const currentUser = session?.user ?? null;
 
     if (currentUser) {
       user = currentUser;

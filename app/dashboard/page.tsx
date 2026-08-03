@@ -6,6 +6,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { ScanForm } from "@/components/ScanForm";
 import { Sparkles, History, Search, ArrowRight, ExternalLink } from "lucide-react";
 
 export const revalidate = 0;
@@ -94,6 +95,20 @@ export default async function DashboardPage() {
             </Link>
           </Card>
         )}
+
+        {/* Run a New Scan Section */}
+        <Card className="shadow-xl space-y-4">
+          <div className="border-b border-[#6B7280]/20 pb-3">
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#EDEEF2]">
+              <Search className="w-5 h-5 text-[#F5A623]" />
+              Run a New Scan
+            </h2>
+            <p className="text-xs text-[#6B7280] mt-1">
+              Enter your domain and description to check your AI search visibility score across major models.
+            </p>
+          </div>
+          <ScanForm />
+        </Card>
 
         {/* Scans History Section */}
         <Card className="shadow-xl space-y-4">

@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { ScanForm } from "@/components/ScanForm";
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { RadialSignalDial } from "@/components/RadialSignalDial";
 import {
   Search,
@@ -33,7 +33,7 @@ export default function Home() {
         {/* 1. Hero Section */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Column: Headline, Copy & Scan Form */}
+            {/* Left Column: Headline, Copy & Action CTAs */}
             <div className="lg:col-span-7 space-y-6 text-center sm:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/20">
                 <Sparkles className="w-3.5 h-3.5" /> Multi-Engine Generative Engine Audit
@@ -47,8 +47,17 @@ export default function Home() {
                 Buyers rely on AI assistants for software and brand recommendations. This scanner tests 5 buyer queries across 4 major AI search models to measure your domain's visibility score.
               </p>
 
-              <div className="pt-2">
-                <ScanForm />
+              <div className="pt-2 flex flex-col sm:flex-row items-center gap-4 justify-center sm:justify-start">
+                <Link href="/signup" className="w-full sm:w-auto">
+                  <Button variant="primary" size="lg" className="w-full sm:w-auto">
+                    Get Started Free
+                  </Button>
+                </Link>
+                <Link href="/login" className="w-full sm:w-auto">
+                  <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                    Log In
+                  </Button>
+                </Link>
               </div>
             </div>
 

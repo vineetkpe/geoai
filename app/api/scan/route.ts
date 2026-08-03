@@ -40,6 +40,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Require authentication to run a scan
+    const authClient = createAuthServerClient();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Please log in to run a scan.' },
+        { status: 401 }
+      );
+    }
+
+    const userId = user.id;
+
     // 0. IP Rate Limit Check (max 3 scans per 60 min per IP)
     const ipRateCheck = await checkIpRateLimit(req);
     if (!ipRateCheck.isAllowed) {
@@ -96,20 +111,6 @@ export async function POST(req: NextRequest) {
     // 5. Persist into Supabase database
     const supabase = getSupabaseServerClient();
 
-    // Check optional authenticated user session
-    let userId: string | null = null;
-    try {
-      const authClient = createAuthServerClient();
-      const {
-        data: { user },
-      } = await authClient.auth.getUser();
-      if (user) {
-        userId = user.id;
-      }
-    } catch {
-      // Guest scan - leave userId as null
-    }
-
     // Insert Scan row
     const insertPayload: Record<string, any> = {
       domain: cleanDomain,
@@ -117,11 +118,8 @@ export async function POST(req: NextRequest) {
       custom_queries: custom_queries || [],
       visibility_score: visibilityScore,
       is_unlocked: false,
+      user_id: userId,
     };
-
-    if (userId) {
-      insertPayload.user_id = userId;
-    }
 
     let { data: scanRow, error: scanErr } = await supabase
       .from('scans')

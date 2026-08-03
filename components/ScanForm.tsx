@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -15,10 +16,12 @@ export const ScanForm: React.FC = () => {
   const [question2, setQuestion2] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [unauthorized, setUnauthorized] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setUnauthorized(false);
     setLoading(true);
 
     const customQueries = [question1, question2]
@@ -39,6 +42,12 @@ export const ScanForm: React.FC = () => {
       });
 
       const data = await res.json();
+
+      if (res.status === 401) {
+        setUnauthorized(true);
+        setLoading(false);
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(data.error || "Something went wrong — please try again");
@@ -63,11 +72,18 @@ export const ScanForm: React.FC = () => {
   return (
     <Card className="w-full max-w-xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
+        {unauthorized ? (
+          <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium flex items-center justify-between gap-3">
+            <span>Please log in to run a scan.</span>
+            <Link href="/login" className="text-[#F5A623] hover:underline font-bold shrink-0">
+              Log In &rarr;
+            </Link>
+          </div>
+        ) : error ? (
           <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium">
             {error}
           </div>
-        )}
+        ) : null}
         <div>
           <label className="block text-xs font-semibold text-[#EDEEF2] uppercase tracking-wider mb-2">
             Website Domain <span className="text-[#F5A623]">*</span>
