@@ -43,6 +43,8 @@ export default function LoginPage() {
     }
   };
 
+  // TODO: re-enable when Google OAuth provider is configured in Supabase
+  /*
   const handleGoogleLogin = async () => {
     setError(null);
     setGoogleLoading(true);
@@ -64,6 +66,7 @@ export default function LoginPage() {
       setGoogleLoading(false);
     }
   };
+  */
 
   return (
     <main className="min-h-screen bg-[#0E1420] text-[#EDEEF2] flex items-center justify-center p-4">
@@ -116,6 +119,8 @@ export default function LoginPage() {
             </Button>
           </form>
 
+          {/* TODO: re-enable when Google OAuth provider is configured in Supabase */}
+          {/*
           <div className="relative my-6 text-center">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#6B7280]/30" />
@@ -153,6 +158,7 @@ export default function LoginPage() {
             </svg>
             Continue with Google
           </Button>
+          */}
 
           <p className="text-center text-xs text-[#6B7280] mt-6">
             Don't have an account?{" "}
