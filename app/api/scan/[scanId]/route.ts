@@ -47,7 +47,7 @@ export async function GET(
     // Compute isPremiumViewer server-side
     let isPremiumViewer = false;
     try {
-      const authClient = createAuthServerClient();
+      const authClient = await createAuthServerClient();
       const {
         data: { user },
       } = await authClient.auth.getUser();

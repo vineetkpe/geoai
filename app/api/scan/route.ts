@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Require authentication to run a scan
-    const authClient = createAuthServerClient();
+    const authClient = await createAuthServerClient();
     const {
       data: { user },
     } = await authClient.auth.getUser();

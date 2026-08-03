@@ -1,16 +1,27 @@
-import React from "react";
+import React, { cache } from "react";
 import Link from "next/link";
 import { createAuthServerClient } from "@/lib/supabase/authServer";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/Button";
 import { LogoutButton } from "@/components/LogoutButton";
 
+const checkAdmin = cache(async (userId: string) => {
+  const serviceClient = getSupabaseServerClient();
+  const { data: userProfile } = await serviceClient
+    .from("users")
+    .select("is_admin")
+    .eq("id", userId)
+    .maybeSingle();
+
+  return Boolean(userProfile?.is_admin);
+});
+
 export async function Header() {
   let user = null;
   let isAdmin = false;
 
   try {
-    const authClient = createAuthServerClient();
+    const authClient = await createAuthServerClient();
     const {
       data: { session },
     } = await authClient.auth.getSession();
@@ -18,14 +29,7 @@ export async function Header() {
 
     if (currentUser) {
       user = currentUser;
-      const serviceClient = getSupabaseServerClient();
-      const { data: userProfile } = await serviceClient
-        .from("users")
-        .select("is_admin")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      isAdmin = Boolean(userProfile?.is_admin);
+      isAdmin = await checkAdmin(user.id);
     }
   } catch {
     // Unauthenticated or error - user stays null

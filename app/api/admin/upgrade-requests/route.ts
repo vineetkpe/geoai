@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     // 1. Verify caller session
-    const authClient = createAuthServerClient();
+    const authClient = await createAuthServerClient();
     const {
       data: { user },
       error: authError,

@@ -4,7 +4,7 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function POST() {
   try {
-    const authClient = createAuthServerClient();
+    const authClient = await createAuthServerClient();
     const {
       data: { user },
       error: authError,

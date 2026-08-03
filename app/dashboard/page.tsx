@@ -10,7 +10,7 @@ import { ScanForm } from "@/components/ScanForm";
 import { Sparkles, History, Search, ArrowRight, ExternalLink } from "lucide-react";
 
 export default async function DashboardPage() {
-  const authClient = createAuthServerClient();
+  const authClient = await createAuthServerClient();
   const {
     data: { session },
   } = await authClient.auth.getSession();

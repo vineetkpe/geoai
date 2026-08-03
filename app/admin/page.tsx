@@ -9,7 +9,7 @@ import { Shield, Users, Search, AlertCircle } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   // 1. Check session
-  const authClient = createAuthServerClient();
+  const authClient = await createAuthServerClient();
   const {
     data: { session },
   } = await authClient.auth.getSession();

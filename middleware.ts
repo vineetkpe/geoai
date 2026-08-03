@@ -29,8 +29,11 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh user session token if expired
-  await supabase.auth.getUser();
+  // Refresh user session token if auth cookies exist
+  const hasAuthCookie = request.cookies.getAll().some((c) => c.name.startsWith('sb-') || c.name.includes('auth-token'));
+  if (hasAuthCookie) {
+    await supabase.auth.getUser();
+  }
 
   return supabaseResponse;
 }

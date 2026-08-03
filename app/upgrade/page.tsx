@@ -9,7 +9,7 @@ import { RequestUpgradeButton } from "@/components/RequestUpgradeButton";
 import { CheckCircle2, Clock, Sparkles, ShieldCheck } from "lucide-react";
 
 export default async function UpgradePage() {
-  const authClient = createAuthServerClient();
+  const authClient = await createAuthServerClient();
   const {
     data: { session },
   } = await authClient.auth.getSession();
